@@ -2,6 +2,10 @@
 1280 x 720 canvas for flappy bird game
 
 */
+const canvas_width = 1280;
+const canvas_height = 720;
+const bird_width = 50;
+const bird_height = 50;
 // locating the canvas element in the dom
 const canvas = document.getElementById("myCanvas")
 
@@ -13,18 +17,18 @@ var ctx = canvas.getContext("2d");
 // ctx.stroke();
 
 // creating linear gradient for sky
-var gradient_sky = ctx.createLinearGradient(0, 720, 0, 0);
+var gradient_sky = ctx.createLinearGradient(0, canvas_height, 0, 0);
 gradient_sky.addColorStop(0, "lightblue");
 gradient_sky.addColorStop(0.5, "deepskyblue");
 gradient_sky.addColorStop(0.8, "dodgerblue");
 gradient_sky.addColorStop(1, "rgba(11, 65, 152, 1)");
 ctx.fillStyle = gradient_sky;
-ctx.fillRect(0, 0, 1280, 720); // fills the entire canvas with sky gradient
+ctx.fillRect(0, 0, canvas_width, canvas_height); // fills the entire canvas with sky gradient
 // ctx.stroke();
 
 
 // creating gradient for the pillars
-var gradient_pillar = ctx.createLinearGradient(0, 720, 0, 0);
+var gradient_pillar = ctx.createLinearGradient(0, canvas_height, 0, 0);
 gradient_pillar.addColorStop(0, "lightgreen");
 gradient_pillar.addColorStop(0.5, "darkgreen");
 gradient_pillar.addColorStop(1, "lightgreen");
@@ -99,9 +103,9 @@ ctx.fillStyle = "black";
 ctx.font = "100px \"BBH Bartle\", sans-serif";
 ctx.textBaseline = 'middle'; 
 ctx.textAlign = 'center'; // sets the (x,y) coordinate as the center of the text, not the starting position that is by default
-ctx.fillText("Flappy Bird",1280/2,720/2 - 50);
+ctx.fillText("Flappy Bird",canvas_width/2,canvas_height/2 - 50);
 ctx.font = "50px Arial";
-ctx.fillText("Tap To Play",1280/2, 720/2 + 80 - 50);
+ctx.fillText("Tap To Play",canvas_width/2, canvas_height/2 + 80 - 50);
 drawPillar();
 
 
