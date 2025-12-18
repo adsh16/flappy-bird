@@ -3,15 +3,26 @@
 */
 
 const canvas_width = 1280;
-const canvas_height = 720;
+const canvas_height = 720 - 80;
 const bird_radius = 70;
 
 const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
 
-function drawSky(){
+let platformLoaded = false;
+const platformSprite = new Image();
+platformSprite.src = "./assets/platform.png";
+platformSprite.onload = () => {
+    platformLoaded = true;
+    drawBoard(); // render once the platform is ready
+};
+
+let platformOffset = 0;
+const platformSpeed = 4; // match pillar speed
+
+
+function drawSky(){ 
     // creating linear gradient for sky
-    
     var gradient_sky = ctx.createLinearGradient(0, canvas_height, 0, 0);
     gradient_sky.addColorStop(0, "lightblue");
     gradient_sky.addColorStop(0.5, "deepskyblue");
@@ -21,8 +32,16 @@ function drawSky(){
     ctx.fillRect(0, 0, canvas_width, canvas_height); // fills the entire canvas with sky gradient
 }
 
+function drawPlatform(){
+    if (!platformLoaded) return;
+    const platformHeight = 80;
+    // draw twice for seamless wrap
+    ctx.drawImage(platformSprite, platformOffset, canvas_height, canvas_width, platformHeight);
+    ctx.drawImage(platformSprite, platformOffset + canvas_width, canvas_height, canvas_width, platformHeight);
+}
 
 function drawStartText(text = "Flappy Bird"){
+    
     // main heading (draw last so it stays visible)
     ctx.fillStyle = "rgba(17, 26, 94, 1)"; // white color for text
     ctx.font = "100px \"BBH Bartle\", sans-serif";
@@ -156,6 +175,10 @@ function update(){
     bird.y += bird.velocity_y;
     bird.x += bird.velocity_x;
 
+    // scroll ground to the left at pillar speed
+    platformOffset -= platformSpeed;
+    if (platformOffset <= -canvas_width) platformOffset += canvas_width;
+
     // add pillars at intervals
     updatePillars();
 
@@ -174,6 +197,7 @@ function update(){
             else if (!pipes[i].passsed) {
                 pipes[i].passsed = true;
                 game_state.score += 1;
+                sounds.score.play();
             }
         }
     }
@@ -184,6 +208,7 @@ function update(){
 function drawBoard(){
     ctx.clearRect(0, 0, canvas_width, canvas_height);
     drawSky();
+    drawPlatform();
     drawPillar();
     drawSprite(bird.x, bird.y);
     drawScore();
@@ -201,6 +226,7 @@ function gameLoop(){
         game_state.score = 0;
         pipes.length = 0; // clear pillars
         drawStartText("Game Over");
+        sounds.track.pause();
         return;
     }
     update();
@@ -212,6 +238,13 @@ function gameLoop(){
 function flap(){
     bird.velocity_y = -10; // move up on flap
 }
+
+
+const sounds = {
+  flap: new Audio("assets/flap.m4a"),
+  track: new Audio("assets/soundtrack.mp3"),
+  score: new Audio("assets/coin_collect.m4a")
+};
 
 /*
 v = u + at
@@ -229,13 +262,17 @@ function init(){
     drawSky();
     drawStartText();
     drawSprite(bird.x, bird.y);
+
     canvas.addEventListener("click", () => {
         if(game_state.started){
             flap();
+            sounds.flap.play();
         }
         else {
             game_state.started = true;
             console.log("Game Started");
+            sounds.track.loop = true;
+            sounds.track.play();
             // start the game loop here
             // INPUT → UPDATE → DRAW → repeat
             requestAnimationFrame(gameLoop);
