@@ -6,6 +6,7 @@ const ctx = canvas.getContext("2d");
 
 function drawSky(){
     // creating linear gradient for sky
+    
     var gradient_sky = ctx.createLinearGradient(0, 720, 0, 0);
     gradient_sky.addColorStop(0, "lightblue");
     gradient_sky.addColorStop(0.5, "deepskyblue");
@@ -46,24 +47,102 @@ function drawPillar(){
     }
 }
 
-function drawSprite(){
-    // drawing the bird sprite
-    
-    ctx.drawImage(birdSprite,birdx,birdy);
+let birdLoaded = false;
+const birdSprite = new Image();
+birdSprite.src = "./assets/bird.png"; // ensure correct relative path
+birdSprite.onload = () => {
+    birdLoaded = true;
+    drawSprite(bird.x, bird.y); // draw once when ready
+};
 
+function drawSprite(x,y){
+    if (!birdLoaded) return; // wait until the sprite finishes loading
+    ctx.drawImage(birdSprite, x, y, 170, 170);
+    // ctx.drawImage(
+    //     birdSprite,
+    //     sx, sy, sw, sh,   // source rectangle (from sprite sheet)
+    //     dx, dy, dw, dh    // destination rectangle (on canvas)
+    // );
 }
 
+let bird =  {
+    x: 50,
+    y: 200,
+    velocity_x: 0,
+    velocity_y: 0,
+    rotation: 0,
+    velocity: 0,
+    gravity: 0.3,
+    lift: -10,
+};
+
+let game_state = {
+    started: false,
+    over: false,
+    paused : false
+}
+
+function update(){
+    // physics, movement, collisions
+    // flapping the bird
+    bird.velocity_y += bird.gravity; // falling down
+    bird.velocity_x += bird.velocity; // moving forward
+    bird.y += bird.velocity_y;
+    bird.x += bird.velocity_x;
+
+    // check for collisions with ground and ceiling
+    
+    // check for collision with pillars
+}
+
+
+function drawBoard(){
+    ctx.clearRect(0, 0, 1280, 720);
+    drawSky();
+    drawPillar();
+    drawSprite(bird.x, bird.y);
+}
+
+function gameLoop(){
+    update();
+    drawBoard();
+    // keep passing the same args each frame
+    requestAnimationFrame(gameLoop); // schedules next frame
+}
+
+function flap(){
+    bird.velocity_y = -7; // move up on flap
+}
+
+/*
+v = u + at
+v = bird.velocity
+u = initial velocity
+a = gravity
+t = time (1 frame)
+*/
+
 function init(){
+    // ctx.beginPath();
+    // ctx.rect(50,200, 170,170);
+    // ctx.rect(1280/2 - 250,720/2 - 150, 500,200);
+    // ctx.clip();
     drawSky();
     drawStartText();
     drawPillar();
-    drawSprite();
-    // let dead = false;
-    
-    // while(!dead){
-
-    // }
-
+    drawSprite(bird.x, bird.y);
+    canvas.addEventListener("click", () => {
+        if(game_state.started){
+            flap();
+        }
+        else {
+            game_state.started = true;
+            console.log("Game Started");
+            // start the game loop here
+            // INPUT → UPDATE → DRAW → repeat
+            requestAnimationFrame(gameLoop);
+        }
+    });    
 }
 
 
