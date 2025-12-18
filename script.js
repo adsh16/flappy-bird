@@ -87,9 +87,7 @@ let bird =  {
     velocity_x: 0,
     velocity_y: 0,
     rotation: 0,
-    velocity: 0,
-    gravity: 0.3,
-    lift: -10,
+    gravity: 0.4,
 };
 
 let game_state = {
@@ -121,17 +119,17 @@ function updatePillars(){
         bottom_length -= gap_bottom;
 
         if (pipes.length == 0) {
-            pipes.push({x: canvas_width / 2, top_length : top_length, bottom_length : bottom_length});
+            pipes.push({x: canvas_width / 2, top_length : top_length, bottom_length : bottom_length, passsed : false});
         }
         else {
             let last_pipe = pipes[pipes.length - 1];
             var pillar_gap = Math.random() * 150 + 150;
-            pipes.push({x: last_pipe.x + 150 + pillar_gap, top_length : top_length, bottom_length : bottom_length});
+            pipes.push({x: last_pipe.x + 150 + pillar_gap, top_length : top_length, bottom_length : bottom_length,passsed : false});
         }
     }
 
     for (let i = 0; i < pipes.length; i++){
-        pipes[i].x -= 2; // move pillar left
+        pipes[i].x -= 4; // move pillar left
     }
 }
 
@@ -154,7 +152,7 @@ function update(){
     // physics, movement, collisions
     // flapping the bird
     bird.velocity_y += bird.gravity; // falling down
-    bird.velocity_x += bird.velocity; // moving forward
+    // bird.velocity_x += bird.velocity; // moving forward
     bird.y += bird.velocity_y;
     bird.x += bird.velocity_x;
 
@@ -173,7 +171,8 @@ function update(){
                 game_state.over = true;
                 console.log("Game Over");
             }
-            else {
+            else if (!pipes[i].passsed) {
+                pipes[i].passsed = true;
                 game_state.score += 1;
             }
         }
@@ -189,7 +188,6 @@ function drawBoard(){
     drawSprite(bird.x, bird.y);
     drawScore();
 }
-
 
 
 function gameLoop(){
