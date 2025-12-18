@@ -90,12 +90,24 @@ birdSprite.onload = () => {
 
 function drawSprite(x,y){
     if (!birdLoaded) return; // wait until the sprite finishes loading
-    ctx.drawImage(birdSprite, x, y, bird_radius, bird_radius);
+    ctx.save();
+    
+    // translate to bird center
+    ctx.translate(x + bird_radius / 2, y + bird_radius / 2);
+    
+    var min_angle = -Math.PI / 4; // in radians
+    var max_angle = Math.PI / 2; // in radians
+    var rotation_angle = Math.max(min_angle, Math.min(max_angle, bird.velocity_y * 0.05));
+    ctx.rotate(rotation_angle);
+    
+    // draw bird centered on rotation point
+    ctx.drawImage(birdSprite, -bird_radius / 2, -bird_radius / 2, bird_radius, bird_radius);
     // ctx.drawImage(
     //     birdSprite,
     //     sx, sy, sw, sh,   // source rectangle (from sprite sheet)
     //     dx, dy, dw, dh    // destination rectangle (on canvas)
     // );
+    ctx.restore();
 }
 
 const pipes = []; // array to hold pillar objects
@@ -105,7 +117,7 @@ let bird =  {
     y: 200,
     velocity_x: 0,
     velocity_y: 0,
-    rotation: 0,
+    rotation: 0, // in radians top is 0, bottom is PI
     gravity: 0.4,
 };
 
