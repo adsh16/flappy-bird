@@ -1,0 +1,11 @@
+#myCanvas {
+    border:1px solid #000000;
+    color: red;
+    /* center this */
+    display: block;
+    margin: 0 auto;
+}
+
+h1 {
+    color: blue;
+}
