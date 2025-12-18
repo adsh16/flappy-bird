@@ -109,7 +109,7 @@ function updatePillars(){
     while(pipes.length < 10){
         // add new pillar
         // gap between top and bottom pillars [200 - 250] between
-        let mid_gap = Math.random() * 100 + 200; // 300 to 500
+        let mid_gap = Math.random() * 100 + 250; // 250 to 350
         
         
         var top_length = canvas_height / 2;
